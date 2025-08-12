@@ -22,6 +22,7 @@ const InterviewSimulator: React.FC<InterviewSimulatorProps> = ({
   const [timeSpent, setTimeSpent] = useState(0);
   const [isRecording, setIsRecording] = useState(false);
   const [isComplete, setIsComplete] = useState(false);
+  const [debugMode, setDebugMode] = useState(false); // 디버그 모드 상태 추가
 
   const startInterview = () => {
     let questions: InterviewQuestion[];
@@ -152,25 +153,37 @@ const InterviewSimulator: React.FC<InterviewSimulatorProps> = ({
 
   if (!session) {
     return (
-      <div className="interview-setup">
-        <div className="setup-container">
-          <h1>Frontend Developer Interview Simulator</h1>
-          <p>Practice your English frontend developer interview skills with our AI-powered simulator.</p>
-          
-          <div className="setup-options">
-            <div className="option-group">
-              <label>Number of Questions:</label>
-              <select defaultValue={questionCount}>
-                <option value={3}>3 Questions</option>
-                <option value={5}>5 Questions</option>
-                <option value={10}>10 Questions</option>
-              </select>
-            </div>
-          </div>
-          
+      <div className="interview-container">
+        <div className="welcome-screen">
+          <h1>🎙️ Frontend Interview Simulator</h1>
+          <p>Practice your technical interview skills with real-world questions</p>
           <button onClick={startInterview} className="start-button">
             Start Interview
           </button>
+          
+          {/* 디버그 모드 토글 버튼 추가 */}
+          <div style={{ marginTop: '20px' }}>
+            <label style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer' }}>
+              <input 
+                type="checkbox" 
+                checked={debugMode}
+                onChange={(e) => setDebugMode(e.target.checked)}
+                style={{ width: '20px', height: '20px' }}
+              />
+              <span>🔍 음성 인식 디버그 모드 활성화</span>
+            </label>
+            {debugMode && (
+              <div style={{ 
+                marginTop: '10px', 
+                padding: '10px', 
+                background: '#fff3cd', 
+                borderRadius: '4px',
+                fontSize: '14px'
+              }}>
+                ⚠️ 디버그 모드가 활성화되면 콘솔에 상세한 로그가 표시됩니다.
+              </div>
+            )}
+          </div>
         </div>
       </div>
     );
@@ -210,20 +223,36 @@ const InterviewSimulator: React.FC<InterviewSimulatorProps> = ({
           isRecording={isRecording}
           onRecordingChange={setIsRecording}
           placeholder="Type your answer here or use voice input..."
+          debugMode={debugMode} // 디버그 모드 전달
         />
       </div>
 
       <div className="interview-actions">
-        <button onClick={resetInterview} className="secondary-button">
-          End Interview
-        </button>
         <button 
-          onClick={submitAnswer} 
-          className="primary-button"
+          onClick={submitAnswer}
           disabled={!currentAnswer.trim()}
+          className="submit-button"
         >
-          {session.currentQuestionIndex < session.questions.length - 1 ? 'Next Question' : 'Finish Interview'}
+          {session.currentQuestionIndex < session.questions.length - 1 
+            ? 'Next Question' 
+            : 'Finish Interview'}
         </button>
+        
+        {/* 인터뷰 중에도 디버그 모드 토글 가능 */}
+        <label style={{ 
+          display: 'flex', 
+          alignItems: 'center', 
+          gap: '8px', 
+          marginLeft: 'auto',
+          fontSize: '14px'
+        }}>
+          <input 
+            type="checkbox" 
+            checked={debugMode}
+            onChange={(e) => setDebugMode(e.target.checked)}
+          />
+          <span>🔍 디버그</span>
+        </label>
       </div>
     </div>
   );
